@@ -15,9 +15,19 @@
 
 @property (nonatomic) NSUInteger counter;
 
+@property NSString *blabla;
+
 @end
 
 @implementation ViewController
+
+-(instancetype)init {
+    self = [super init];
+    if (self) {
+        _blabla = @"blabla";
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
