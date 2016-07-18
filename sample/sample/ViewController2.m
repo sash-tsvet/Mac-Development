@@ -9,18 +9,20 @@
 #import "ViewController2.h"
 
 
+
 @interface ViewController2 ()
 @property (nonatomic, strong) UILabel* label;
 @property (nonatomic, strong) UIButton* button;
 @property (nonatomic) int counter;
 -(void) myEventHandler;
+-(void) changeOrientation;
 @end
 
 
 @implementation ViewController2
 
 
--(instancetype)init {
+- (instancetype)init {
     self = [super init];
     if (self) {
         _counter = 0;
@@ -28,7 +30,7 @@
     return self;
 }
 
--(void) myEventHandler {
+- (void) myEventHandler {
     _counter++;
     [_label setText:[NSString stringWithFormat:@"%lu",(unsigned long)_counter]];
 }
@@ -48,32 +50,95 @@
     
     [self.button addTarget:self action:@selector(myEventHandler) forControlEvents: UIControlEventTouchUpInside];
     
+    
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(changeOrientation:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
+    
     [self.view addSubview:self.label];
     [self.view addSubview:self.button];
-}
-
-
-
-- (void)viewWillLayoutSubviews {
     
     CGRect screenSize = [[UIScreen mainScreen] bounds];
     int width = screenSize.size.width;
     int height = 30;
-    if(UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]))
-    {
+    
+    
+    
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         self.label.frame = CGRectMake(0, screenSize.size.height/2 - height, width, height);
         self.button.frame = CGRectMake(0, screenSize.size.height/2, width, height);
-    }
-    else
-    {
+    } else {
         self.label.frame = CGRectMake(0, 0, width, height);
         self.button.frame = CGRectMake(0, height, width, height);
     }
-    
 }
 
+- (void)changeOrientation:(NSNotification *)paramNotification {
+    
+    NSNumber *orientation = [paramNotification.userInfo objectForKey:@"UIDeviceOrientationRotateAnimatedUserInfoKey"];
 
+    NSUInteger orientationInt = orientation.integerValue;
 
+    CGRect screenSize = [[UIScreen mainScreen] bounds];
+    int width = screenSize.size.width;
+    int height = 30;
+    
+    
+    CGRect labelFrame;
+    CGRect buttonFrame;
+    
+    if (orientationInt == UIDeviceOrientationLandscapeLeft || orientationInt == UIDeviceOrientationLandscapeRight ) {
+        labelFrame = CGRectMake(0, 0, width, height);
+        buttonFrame = CGRectMake(0, height, width, height);
+    } else {
+        labelFrame = CGRectMake(0, screenSize.size.height/2 - height, width, height);
+        buttonFrame = CGRectMake(0, screenSize.size.height/2, width, height);
+    }
+    self.label.frame = labelFrame;
+    self.button.frame = buttonFrame;
+
+    
+    
+    /*UIInterfaceOrientation orient = [paramNotification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
+    CGRect screenSize = [[UIScreen mainScreen] bounds];
+    int width = screenSize.size.width;
+    int height = 30;
+    switch (orient) {
+        case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
+            self.label.frame = CGRectMake(0, screenSize.size.height/2 - height, width, height);
+            self.button.frame = CGRectMake(0, screenSize.size.height/2, width, height);
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeRight:
+        default:
+            self.label.frame = CGRectMake(0, 0, width, height);
+            self.button.frame = CGRectMake(0, height, width, height);
+            break;
+    }
+    
+    [self.view setNeedsLayout];*/
+    
+    
+//    if(UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]))
+//    {
+//        self.label.frame = CGRectMake(0, screenSize.size.height/2 - height, width, height);
+//        self.button.frame = CGRectMake(0, screenSize.size.height/2, width, height);
+//    }
+//    else
+//    {
+//        self.label.frame = CGRectMake(0, 0, width, height);
+//        self.button.frame = CGRectMake(0, height, width, height);
+//    }
+}
+
+//- (void)viewWillLayoutSubviews {
+//    
+//    
+//    
+//}
 
 
 //- (IBAction)buttonPressed:(id)sender {
